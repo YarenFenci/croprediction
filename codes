@@ -1,0 +1,237 @@
+import pandas as pd
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+%matplotlib inline
+from sklearn.model_selection import train_test_split
+
+#for interactive analysis
+from ipywidgets import interact
+data = pd.read_csv('/content/crop_recommendation (1).csv')
+data.head(10)
+print(data['label'].unique() , '\n and unique values are', data['label'].nunique())
+data['label'].value_counts()
+data.groupby(['label']).mean()
+# we have 100 of each catagory
+
+#Checking average climatic and soil requirements
+
+print(" Average Ratio of Nitrogen in the Soil : {0:.2f}" .format(data['N'].mean()))
+print(" Average Ratio of Phosphorous in the Soil : {0:.2f}" .format(data['P'].mean()))
+print(" Average Ratio of Potassium in the Soil : {0:.2f}" .format(data['K'].mean()))
+print(" Average Temperature in Celsius : {0:.2f}" .format(data['temperature'].mean()))
+print(" Average Relative Humidity in % : {0:.2f}".format(data['humidity'].mean()))
+print(" Average PH Value of the Soil : {0:.2f}" .format(data['ph'].mean()))
+print(" Average Rainfall in mm : {0:.2f}" .format(data['rainfall'].mean()))
+def summary(conditions=['N','P','K','temperature','humidity','ph','rainfall']):
+    print(data.groupby(['label']).agg({conditions : ['mean','max','min']}))
+def sumary(con=['N','P','K','temperature','humidity','ph','rainfall']):
+    print("crops which need more than average",con,'\n')
+    print(data[data[con]>data[con].mean()]['label'].unique())
+    print(".............................................")
+    print("crops which need less than avg",con,'\n')
+    print(data[data[con]<data[con].mean()]['label'].unique())
+#Checking the detailed statistics for each crop
+
+@interact
+def summary(crops = list(data['label'].value_counts().index)):
+    x = data[data['label'] == crops]
+    print("...........................................")
+    print("Statistics for Nitrogen")
+    print("Minimum Nitrogen required:", x['N'].min())
+    print("Average Nitrogen required:", x['N'].mean())
+    print("Maximum Nitrogen required:", x['N'].max())
+    print("...........................................")
+    print("Statistics for Phosphorous")
+    print("Minimum Phosphorous required:", x['P'].min())
+    print("Average Phosphorous required:", x['P'].mean())
+    print("Maximum Phosphorous required:", x['P'].max())
+    print("...........................................")
+    print("Statistics for Pottasium")
+    print("Minimum Pottasium required:", x['K'].min())
+    print("Average Pottasium required:", x['K'].mean())
+    print("Maximum Pottasium required:", x['K'].max())
+    print("...........................................")
+    print("Statistics for Temperature")
+    print("Minimum Temperature required: {0:.2f}".format(x['temperature'].min()))
+    print("Average Temperature required: {0:.2f}".format(x['temperature'].mean()))
+    print("Maximum Temperature required: {0:.2f}".format(x['temperature'].max()))
+    print("...........................................")
+    print("Statistics for Humidity")
+    print("Minimum Humidity required: {0:.2f}".format(x['humidity'].min()))
+    print("Average Humidity required: {0:.2f}".format(x['humidity'].mean()))
+    print("Maximum Humidity required: {0:.2f}".format(x['humidity'].max()))
+    print("...........................................")
+    print("Statistics for PH")
+    print("Minimum PH required: {0:.2f}".format(x['ph'].min()))
+    print("Average PH required: {0:.2f}".format(x['ph'].mean()))
+    print("Maximum PH required: {0:.2f}".format(x['ph'].max()))
+    print("...........................................")
+    print("Statistics for Rainfall")
+    print("Minimum Rainfall required: {0:.2f}".format(x['rainfall'].min()))
+    print("Average Rainfall required: {0:.2f}".format(x['rainfall'].mean()))
+    print("Maximum Rainfall required: {0:.2f}".format(x['rainfall'].max()))
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+plt.figure(figsize=(15, 10))
+
+plt.subplot(3, 3, 1)
+sns.histplot(data['K'], color='red', kde=True)
+plt.xlabel('Ratio of Potassium', fontsize=12)
+plt.grid(True)
+
+plt.subplot(3, 3, 2)
+sns.histplot(data['P'], color='blue', kde=True)
+plt.xlabel('Ratio of Phosphoras', fontsize=12)
+plt.grid(True)
+
+plt.subplot(3, 3, 3)
+sns.histplot(data['N'], color='green', kde=True)
+plt.xlabel('Ratio of Nitrogen', fontsize=12)
+plt.grid(True)
+
+plt.subplot(3, 3, 4)
+sns.histplot(data['ph'], color='yellow', kde=True)
+plt.xlabel('Ratio of PH', fontsize=12)
+plt.grid(True)
+
+plt.subplot(3, 3, 5)
+sns.histplot(data['temperature'], color='pink', kde=True)
+plt.xlabel('Ratio of Temperature', fontsize=12)
+plt.grid(True)
+
+plt.subplot(3, 3, 6)
+sns.histplot(data['humidity'], color='orange', kde=True)
+plt.xlabel('Ratio of Humidity', fontsize=12)
+plt.grid(True)
+
+plt.subplot(3, 3, 7)
+sns.histplot(data['rainfall'], color='blue', kde=True)
+plt.xlabel('Ratio of Rainfall', fontsize=12)
+plt.grid(True)
+
+plt.suptitle('Distribution for Agriculture Condition', fontsize=16)
+plt.tight_layout()
+plt.show()
+
+
+
+print("Some Interesting Patterns")
+print("...........................................")
+print("Crops that require very High Ratio of Nitrogen Content in Soil:", data[data['N'] > 120]['label'].unique())
+print("Crops that require very High Ratio of Phosphorous Content in Soil:", data[data['P'] > 100]['label'].unique())
+print("Crops that require very High Ratio of Potassium Content in Soil:", data[data['K'] > 200]['label'].unique())
+print("Crops that require very High Rainfall:", data[data['rainfall'] > 200]['label'].unique())
+print("Crops that require very Low Temperature:", data[data['temperature'] < 10]['label'].unique())
+print("Crops that require very High Temperature:", data[data['temperature'] > 40]['label'].unique())
+print("Crops that require very Low Humidity:", data[data['humidity'] < 20]['label'].unique())
+print("Crops that require very Low pH:", data[data['ph'] < 4]['label'].unique())
+print("Crops that require very High pH:", data[data['ph'] > 9]['label'].unique())
+
+print("Summer Crops")
+print(data[(data['temperature'] > 30) & (data['humidity'] > 50)]['label'].unique())
+print("\n")
+print("Winter Crops")
+print(data[(data['temperature'] < 20) & (data['humidity'] > 30)]['label'].unique())
+print("\n")
+print("Monsoon Crops")
+print(data[(data['rainfall'] > 200) & (data['humidity'] > 30)]['label'].unique())
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Verileri görselleştirmek için scatter plot kullanalım
+plt.figure(figsize=(12, 8))
+
+# Yaz ürünleri (Summer Crops)
+plt.subplot(2, 2, 1)
+sns.scatterplot(x='temperature', y='humidity', data=data[(data['temperature'] > 30) & (data['humidity'] > 50)], hue='label', palette='Set1', s=100)
+plt.title('Summer Crops')
+plt.xlabel('Temperature')
+plt.ylabel('Humidity')
+plt.legend(loc='upper left')
+
+# Kış ürünleri (Winter Crops)
+plt.subplot(2, 2, 2)
+sns.scatterplot(x='temperature', y='humidity', data=data[(data['temperature'] < 20) & (data['humidity'] > 30)], hue='label', palette='Set2', s=100)
+plt.title('Winter Crops')
+plt.xlabel('Temperature')
+plt.ylabel('Humidity')
+plt.legend(loc='upper right')
+
+# Muson ürünleri (Monsoon Crops)
+plt.subplot(2, 2, 3)
+sns.scatterplot(x='rainfall', y='humidity', data=data[(data['rainfall'] > 200) & (data['humidity'] > 30)], hue='label', palette='Set3', s=100)
+plt.title('Monsoon Crops')
+plt.xlabel('Rainfall')
+plt.ylabel('Humidity')
+plt.legend(loc='upper left')
+
+plt.tight_layout()
+plt.show()
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
+import pandas as pd
+
+
+fig = plt.figure(figsize=(10, 8))
+ax = fig.add_subplot(111, projection='3d')
+
+x = data['temperature']
+y = data['humidity']
+z = data['rainfall']
+colors = pd.factorize(data['label'])[0]
+
+scatter = ax.scatter(x, y, z, c=colors, cmap='Set1', s=50)
+ax.set_xlabel('Temperature')
+ax.set_ylabel('Humidity')
+ax.set_zlabel('Rainfall')
+plt.title('3D Scatter Plot of Agriculture Conditions')
+
+
+plt.show()
+X = data.drop(['label'],axis=1)
+Y = data.label
+X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.20)
+!pip install scikit-learn
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler # Import the StandardScaler class
+
+scaler = StandardScaler()
+scaler.fit(X_train)
+
+X_train = scaler.transform(X_train)
+X_test = scaler.transform(X_test)
+scaler = StandardScaler()
+scaler.fit(X_train)
+
+X_train = scaler.transform(X_train)
+X_test = scaler.transform(X_test)
+# Import the KNeighborsClassifier class
+from sklearn.neighbors import KNeighborsClassifier
+
+classifier = KNeighborsClassifier(n_neighbors=5)
+classifier.fit(X_train, y_train)
+y_pred = classifier.predict(X_test)
+from sklearn.metrics import classification_report # Import the classification_report function
+
+y_pred = classifier.predict(X_test)
+print(classification_report(y_pred,y_test))
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.metrics import confusion_matrix
+
+
+cm = confusion_matrix(y_test, y_pred)
+
+
+plt.figure(figsize=(12, 8))
+sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', xticklabels=classifier.classes_, yticklabels=classifier.classes_)
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.title('Confusion Matrix')
+plt.show()
+
